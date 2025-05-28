@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Santa Barbara Channel Forecast</title>
   <style>
     body {
@@ -25,13 +25,14 @@
 </head>
 <body>
   <h1>Santa Barbara Channel Forecast</h1>
-  <p>Marine forecast 18 nautical miles south of Ventura, CA (near Santa Cruz Island):</p>
+  <p>Forecast for location: 34.03°N, 119.49°W</p>
   <pre id="forecast">Loading forecast...</pre>
 
   <script>
     async function getForecast() {
-      const point = { lat: 34.03, lon: -119.49 };
-      const pointUrl = `https://api.weather.gov/points/${point.lat},${point.lon}`;
+      const lat = 34.03;
+      const lon = -119.49;
+      const pointUrl = `https://api.weather.gov/points/${lat},${lon}`;
 
       try {
         const res = await fetch(pointUrl);
