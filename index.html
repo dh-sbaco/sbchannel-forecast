@@ -19,7 +19,7 @@
 <script>
 async function loadForecast() {
   const lat = 34.060205, lon = -119.531650;
-  const headers = { 'User-Agent': 'sbchannel-forecast (GitHub/<username>)' };
+  const headers = { 'User-Agent': 'sbchannel-forecast (GitHub/dh-sbaco)' };
   
   try {
     const pointRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`, { headers });
