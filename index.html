@@ -1,71 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Santa Barbara Channel Forecast</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 2rem;
-      background: #f0f8ff;
-      color: #222;
-    }
-    h1 {
-      color: #0077b6;
-    }
-    .forecast-entry {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1rem;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .error {
-      color: red;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marine Forecast @ 85623CFV+7P (~34.03N, 119.49W)</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 1rem; background: #eef6f9; color: #333; }
+  h1 { color: #005f73; }
+  .entry { background: #fff; padding: 0.8rem; margin-bottom: 0.6rem; border-radius: 6px; }
+  .time { font-weight: bold; }
+</style>
 </head>
 <body>
-  <h1>Santa Barbara Channel Forecast</h1>
-  <p>Location: 34.03°N, 119.49°W (Approx. 18nm south of Ventura, CA)</p>
-  <div id="forecast">Loading...</div>
+<h1>Marine Forecast @ 85623CFV+7P</h1>
+<p>Approximate location: 34.03° N, 119.49° W</p>
+<div id="forecast">Loading forecast data…</div>
 
-  <script>
-    async function getForecast() {
-      const lat = 34.03;
-      const lon = -119.49;
-      const pointUrl = `https://api.weather.gov/points/${lat},${lon}`;
+<script>
+async function loadForecast() {
+  const lat = 34.03, lon = -119.49;
+  const headers = { 'User-Agent': 'sbchannel-forecast (GitHub/dh-sbaco)' };
+  
+  try {
+    const pointRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`, { headers });
+    const pointJson = await pointRes.json();
+    const gridUrl = pointJson.properties.forecastGridData;
+    
+    const gridRes = await fetch(gridUrl, { headers });
+    const gridJson = await gridRes.json();
+    const { windSpeed, windDirection, waveHeight } = gridJson.properties;
+    const times = windSpeed?.values?.map(v => v.validTime) || [];
+    
+    const container = document.getElementById('forecast');
+    container.innerHTML = '';
+    
+    times.slice(0, 12).forEach((vt, i) => {
+      const period = windSpeed.values.find(v => v.validTime === vt);
+      const dir = windDirection.values[i]?.value;
+      const speed = period?.value;
+      const waves = waveHeight?.values[i]?.value;
+      
+      const dt = new Date(vt.split('/')[0]);
+      const div = document.createElement('div');
+      div.className = 'entry';
+      div.innerHTML = `
+        <div class="time">${dt.toLocaleString()}</div>
+        <div>Wind: ${speed ?? '–'} kt from ${dir ?? '–'}°</div>
+        <div>Waves: ${waves ?? '–'} ft</div>
+      `;
+      container.appendChild(div);
+    });
+    
+  } catch (e) {
+    document.getElementById('forecast').innerHTML =
+      `<p style="color:red">Error loading data: ${e.message}</p>`;
+    console.error(e);
+  }
+}
 
-      try {
-        const res = await fetch(pointUrl, {
-          headers: { 'User-Agent': 'sbchannel-forecast (dustin@islandkayaking.com)' }
-        });
-        const pointData = await res.json();
-        const forecastUrl = pointData.properties.forecast;
-
-        const forecastRes = await fetch(forecastUrl, {
-          headers: { 'User-Agent': 'sbchannel-forecast (dustin@islandkayaking.com)' }
-        });
-        const forecastData = await forecastRes.json();
-
-        const container = document.getElementById('forecast');
-        container.innerHTML = '';
-
-        forecastData.properties.periods.forEach(period => {
-          const div = document.createElement('div');
-          div.className = 'forecast-entry';
-          div.innerHTML = `<strong>${period.name}</strong><br>${period.detailedForecast}`;
-          container.appendChild(div);
-        });
-
-      } catch (error) {
-        document.getElementById('forecast').innerHTML =
-          `<p class="error">Error fetching forecast: ${error.message}</p>`;
-      }
-    }
-
-    getForecast();
-  </script>
+loadForecast();
+</script>
 </body>
 </html>
