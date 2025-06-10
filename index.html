@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Marine Forecast @ 85623CFV+7P (~34.03N, 119.49W)</title>
+<title>Marine Forecast @ 34.060205, -119.531650</title>
 <style>
   body { font-family: Arial, sans-serif; padding: 1rem; background: #eef6f9; color: #333; }
   h1 { color: #005f73; }
@@ -12,14 +12,14 @@
 </style>
 </head>
 <body>
-<h1>Marine Forecast @ 85623CFV+7P</h1>
-<p>Approximate location: 34.03° N, 119.49° W</p>
+<h1>Marine Forecast @ 34.060205, -119.531650</h1>
+<p>Approximate location: 34.060205° N, 119.531650° W</p>
 <div id="forecast">Loading forecast data…</div>
 
 <script>
 async function loadForecast() {
-  const lat = 34.03, lon = -119.49;
-  const headers = { 'User-Agent': 'sbchannel-forecast (GitHub/dh-sbaco)' };
+  const lat = 34.060205, lon = -119.531650;
+  const headers = { 'User-Agent': 'sbchannel-forecast (GitHub/<username>)' };
   
   try {
     const pointRes = await fetch(`https://api.weather.gov/points/${lat},${lon}`, { headers });
@@ -41,10 +41,12 @@ async function loadForecast() {
       const waves = waveHeight?.values[i]?.value;
       
       const dt = new Date(vt.split('/')[0]);
+      const dtPST = dt.toLocaleString('en-US', { timeZone: 'America/Los_Angeles' });
+      
       const div = document.createElement('div');
       div.className = 'entry';
       div.innerHTML = `
-        <div class="time">${dt.toLocaleString()}</div>
+        <div class="time">${dtPST}</div>
         <div>Wind: ${speed ?? '–'} kt from ${dir ?? '–'}°</div>
         <div>Waves: ${waves ?? '–'} ft</div>
       `;
