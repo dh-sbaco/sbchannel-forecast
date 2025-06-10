@@ -39,13 +39,13 @@
 
       try {
         const res = await fetch(pointUrl, {
-          headers: { 'User-Agent': 'sbchannel-forecast (example@example.com)' }
+          headers: { 'User-Agent': 'sbchannel-forecast (dustin@islandkayaking.com)' }
         });
         const pointData = await res.json();
         const forecastUrl = pointData.properties.forecast;
 
         const forecastRes = await fetch(forecastUrl, {
-          headers: { 'User-Agent': 'sbchannel-forecast (example@example.com)' }
+          headers: { 'User-Agent': 'sbchannel-forecast (dustin@islandkayaking.com)' }
         });
         const forecastData = await forecastRes.json();
 
